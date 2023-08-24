@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  master:
+    image: redis:7.2.0
+    container_name: redis-master
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./master/redis.conf:/etc/redis.conf"
+      - "./master/data:/data"
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+    command:
+      [
+        "redis-server",
+        "/etc/redis.conf",
+        "--requirepass",
+        "123123"
+      ]
+  slave:
+    image: redis:7.2.0
+    container_name: redis-slave
+    ports:
+      - "6380:6379"
+    volumes:
+      - "./slave/redis.conf:/etc/redis.conf"
+      - "./slave/data:/data"
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+    command:
+      [
+        "redis-server",
+        "/etc/redis.conf",
+        "--requirepass",
+        "123123",
+        "--slaveof",
+        "master",
+        "6379",
+        "--masterauth",
+        "123123"
+      ]
